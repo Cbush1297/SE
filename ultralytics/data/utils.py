@@ -103,10 +103,12 @@ def verify_image_label(args):
     try:
         # Verify images
         if im_file.endswith('.npy'):
+            print(f"Loading .npy image: {im_file}")
             im = np.load(im_file)
             shape = im.shape[:2]
             assert shape[0] > 9 and shape[1] > 9, f"image size {shape} <10 pixels"
         else:
+            print(f"Opening image with PIL: {im_file}")
             im = Image.open(im_file)
             im.verify()  # PIL verify
             shape = exif_size(im)  # image size
@@ -114,6 +116,7 @@ def verify_image_label(args):
             assert (shape[0] > 9) & (shape[1] > 9), f"image size {shape} <10 pixels"
             assert im.format.lower() in IMG_FORMATS, f"invalid image format {im.format}. {FORMATS_HELP_MSG}"
         if not im_file.endswith('.npy') and if im.format.lower() in {"jpg", "jpeg"}:
+            print(f"Verifying JPEG end marker for: {im_file}")
             with open(im_file, "rb") as f:
                 f.seek(-2, 2)
                 if f.read() != b"\xff\xd9":  # corrupt JPEG
@@ -121,15 +124,18 @@ def verify_image_label(args):
                     msg = f"{prefix}WARNING ⚠️ {im_file}: corrupt JPEG restored and saved"
 
         # Verify labels
+        print(f"Checking label file: {lb_file}")
         if os.path.isfile(lb_file):
             nf = 1  # label found
             with open(lb_file) as f:
                 lb = [x.split() for x in f.read().strip().splitlines() if len(x)]
                 if any(len(x) > 6 for x in lb) and (not keypoint):  # is segment
+                    print("Processing segments in labels.")
                     classes = np.array([x[0] for x in lb], dtype=np.float32)
                     segments = [np.array(x[1:], dtype=np.float32).reshape(-1, 2) for x in lb]  # (cls, xy1...)
                     lb = np.concatenate((classes.reshape(-1, 1), segments2boxes(segments)), 1)  # (cls, xywh)
                 lb = np.array(lb, dtype=np.float32)
+            print(f"Labels loaded: {lb}")
             nl = len(lb)
             if nl:
                 if keypoint:
@@ -157,6 +163,7 @@ def verify_image_label(args):
                 ne = 1  # label empty
                 lb = np.zeros((0, (5 + nkpt * ndim) if keypoint else 5), dtype=np.float32)
         else:
+            print(f"Label file missing: {lb_file}")
             nm = 1  # label missing
             lb = np.zeros((0, (5 + nkpt * ndim) if keypoints else 5), dtype=np.float32)
         if keypoint:
