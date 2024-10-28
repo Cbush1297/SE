@@ -133,16 +133,21 @@ class YOLODataset(BaseDataset):
     def get_labels(self):
         """Returns dictionary of labels for YOLO training."""
         self.label_files = img2label_paths(self.im_files)
+        print(f"Label files: {self.label_files}")
         cache_path = Path(self.label_files[0]).parent.with_suffix(".cache")
         try:
+            print(f"Attempting to load cache file from: {cache_path}")
             cache, exists = load_dataset_cache_file(cache_path), True  # attempt to load a *.cache file
             assert cache["version"] == DATASET_CACHE_VERSION  # matches current version
             assert cache["hash"] == get_hash(self.label_files + self.im_files)  # identical hash
+            print(f"Cache loaded and validated successfully")
         except (FileNotFoundError, AssertionError, AttributeError):
+            print(f"Cache load failed: {e}")
             cache, exists = self.cache_labels(cache_path), False  # run cache ops
 
         # Display cache
         nf, nm, ne, nc, n = cache.pop("results")  # found, missing, empty, corrupt, total
+        print(f"Cache summary - Found: {nf}, Missing: {nm}, Empty: {ne}, Corrupt: {nc}, Total: {n}")
         if exists and LOCAL_RANK in {-1, 0}:
             d = f"Scanning {cache_path}... {nf} images, {nm + ne} backgrounds, {nc} corrupt"
             TQDM(None, desc=self.prefix + d, total=n, initial=n)  # display results
@@ -152,13 +157,18 @@ class YOLODataset(BaseDataset):
         # Read cache
         [cache.pop(k) for k in ("hash", "version", "msgs")]  # remove items
         labels = cache["labels"]
+        print("Loaded labels:", labels)
         if not labels:
             LOGGER.warning(f"WARNING ⚠️ No images found in {cache_path}, training may not work correctly. {HELP_URL}")
         self.im_files = [lb["im_file"] for lb in labels]  # update im_files
 
         # Check if the dataset is all boxes or all segments
         lengths = ((len(lb["cls"]), len(lb["bboxes"]), len(lb["segments"])) for lb in labels)
-        len_cls, len_boxes, len_segments = (sum(x) for x in zip(*lengths))
+       try:
+            len_cls, len_boxes, len_segments = (sum(x) for x in zip(*lengths))
+        except ValueError as e:
+            print("Error in unpacking label lengths:", e)
+            raise
         if len_segments and len_boxes != len_segments:
             LOGGER.warning(
                 f"WARNING ⚠️ Box and segment counts should be equal, but got len(segments) = {len_segments}, "
