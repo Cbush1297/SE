@@ -411,6 +411,11 @@ class LoadImagesAndVideos:
             else:
                 # Handle image files (including HEIC)
                 self.mode = "image"
+                if path.endswith(".npy"):
+                    # Load .npy file as a 5-chan image
+                    im0 = np.load(path)
+                    if im0.ndim != 3 or im0.shape[2] != 5:
+                        raise ValueError(f"Expected 5-channel image in .npy file: {path}")
                 if path.split(".")[-1].lower() == "heic":
                     # Load HEIC image using Pillow with pillow-heif
                     check_requirements("pillow-heif")
