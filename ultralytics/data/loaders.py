@@ -414,6 +414,7 @@ class LoadImagesAndVideos:
                 if path.endswith(".npy"):
                     # Load .npy file as a 5-chan image
                     im0 = np.load(path)
+                    print('Adding npy file')
                     if im0.ndim != 3 or im0.shape[2] != 5:
                         raise ValueError(f"Expected 5-channel image in .npy file: {path}")
                 if path.split(".")[-1].lower() == "heic":
