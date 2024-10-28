@@ -1364,8 +1364,11 @@ class RandomHSV:
         """
         img = labels["img"]
         if self.hgain or self.sgain or self.vgain:
+            bgr_img = img[:,:,:3]
+            extra_channels = img[:, :, 3:]
+            
             r = np.random.uniform(-1, 1, 3) * [self.hgain, self.sgain, self.vgain] + 1  # random gains
-            hue, sat, val = cv2.split(cv2.cvtColor(img, cv2.COLOR_BGR2HSV))
+            hue, sat, val = cv2.split(cv2.cvtColor(bgr_img, cv2.COLOR_BGR2HSV))
             dtype = img.dtype  # uint8
 
             x = np.arange(0, 256, dtype=r.dtype)
@@ -1374,7 +1377,11 @@ class RandomHSV:
             lut_val = np.clip(x * r[2], 0, 255).astype(dtype)
 
             im_hsv = cv2.merge((cv2.LUT(hue, lut_hue), cv2.LUT(sat, lut_sat), cv2.LUT(val, lut_val)))
-            cv2.cvtColor(im_hsv, cv2.COLOR_HSV2BGR, dst=img)  # no return needed
+            bgr_augmented = cv2.cvtColor(im_hsv, cv2.COLOR_HSV2BGR)
+
+            # Reassemble augmented BGR with additional channels
+            img = np.concatenate((bgr_augmented, extra_channels), axis=2)
+            labels["img"] = img # no return needed
         return labels
 
 
