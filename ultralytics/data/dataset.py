@@ -145,7 +145,7 @@ class YOLODataset(BaseDataset):
             assert cache["version"] == DATASET_CACHE_VERSION  # matches current version
             assert cache["hash"] == get_hash(self.label_files + self.im_files)  # identical hash
             print(f"Cache loaded and validated successfully")
-        except (FileNotFoundError, AssertionError, AttributeError):
+        except (FileNotFoundError, AssertionError, AttributeError) as e:
             print(f"Cache load failed: {e}")
             cache, exists = self.cache_labels(cache_path), False  # run cache ops
 
