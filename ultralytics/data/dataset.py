@@ -77,6 +77,7 @@ class YOLODataset(BaseDataset):
         nm, nf, ne, nc, msgs = 0, 0, 0, 0, []  # number missing, found, empty, corrupt, messages
         desc = f"{self.prefix}Scanning {path.parent / path.stem}..."
         total = len(self.im_files)
+        print(f"Total images to process: {total}")
         nkpt, ndim = self.data.get("kpt_shape", (0, 0))
         if self.use_keypoints and (nkpt <= 0 or ndim not in {2, 3}):
             raise ValueError(
@@ -98,6 +99,9 @@ class YOLODataset(BaseDataset):
             )
             pbar = TQDM(results, desc=desc, total=total)
             for im_file, lb, shape, segments, keypoint, nm_f, nf_f, ne_f, nc_f, msg in pbar:
+                print(f"Processing result for {im_file}: Found={nf_f}, Missing={nm_f}, Empty={ne_f}, Corrupt={nc_f}")
+                if msg:
+                    print(f"Message for {im_file}: {msg}")
                 nm += nm_f
                 nf += nf_f
                 ne += ne_f
