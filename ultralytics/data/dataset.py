@@ -164,7 +164,7 @@ class YOLODataset(BaseDataset):
 
         # Check if the dataset is all boxes or all segments
         lengths = ((len(lb["cls"]), len(lb["bboxes"]), len(lb["segments"])) for lb in labels)
-       try:
+        try:
             len_cls, len_boxes, len_segments = (sum(x) for x in zip(*lengths))
         except ValueError as e:
             print("Error in unpacking label lengths:", e)
