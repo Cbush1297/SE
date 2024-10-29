@@ -548,10 +548,10 @@ class Mosaic(BaseMixTransform):
         self.n = n
 
         for i, data in enumerate(dataset):
-        img = data["img"]
-        if img.shape[2] != 5:
-            print(f"Issue found in image at index {i}, file: {data.get('im_file', 'Unknown')}")
-            print(f"Shape: {img.shape}")
+            img = data["img"]
+            if img.shape[2] != 5:
+                print(f"Issue found in image at index {i}, file: {data.get('im_file', 'Unknown')}")
+                print(f"Shape: {img.shape}")
 
     def get_indexes(self, buffer=True):
         """
