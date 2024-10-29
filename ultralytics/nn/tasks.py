@@ -1005,7 +1005,7 @@ def parse_model(d, ch, verbose=True):  # model_dict, input_channels(3)
             SCDown,
             C2fCIB,
         }:
-            c1, c2 = ch[f], args[1]
+            c1, c2 = ch[f], args[0]
             print(f"Parse model c1: {c1} - c2: {c2} - after changing args[1]")
             if c2 != nc:  # if c2 not equal to number of classes (i.e. for Classify() output)
                 c2 = make_divisible(min(c2, max_channels) * width, 8)
@@ -1016,7 +1016,7 @@ def parse_model(d, ch, verbose=True):  # model_dict, input_channels(3)
                     max(round(min(args[2], max_channels // 2 // 32)) * width, 1) if args[2] > 1 else args[2]
                 )  # num heads
 
-            args = [c1, c2, *args[2:]]
+            args = [c1, c2, *args[1:]]
             if m in {
                 BottleneckCSP,
                 C1,
@@ -1038,12 +1038,7 @@ def parse_model(d, ch, verbose=True):  # model_dict, input_channels(3)
             if m is C3k2:  # for M/L/X sizes
                 legacy = False
                 if scale in "mlx":
-                    if len(args) > 3:
-                        args[3] = True
-                        print(f"Layer {i}: Setting args[3] = True")
-                    else:
-                        args.append(True)
-                        print(f"Layer {i}: Appended args[3] = True")
+                    args[3] = True
         elif m is AIFI:
             args = [ch[f], *args]
         elif m in {HGStem, HGBlock}:
