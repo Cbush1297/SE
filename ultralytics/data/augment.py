@@ -547,6 +547,12 @@ class Mosaic(BaseMixTransform):
         self.border = (-imgsz // 2, -imgsz // 2)  # width, height
         self.n = n
 
+        for i, data in enumerate(dataset):
+        img = data["img"]
+        if img.shape[2] != 5:
+            print(f"Issue found in image at index {i}, file: {data.get('im_file', 'Unknown')}")
+            print(f"Shape: {img.shape}")
+
     def get_indexes(self, buffer=True):
         """
         Returns a list of random indexes from the dataset for mosaic augmentation.
@@ -637,7 +643,7 @@ class Mosaic(BaseMixTransform):
             h, w = labels_patch.pop("resized_shape")
 
             if img.shape[2] != 5:
-                print(f'Reshaping image: {img} in mosaic: org shape was {img.shape[2]}')
+                print(f'Reshaping image in mosaic: org shape was: {img.shape[2]}')
                 img = img[:, :, :5] 
             # Place img in img3
             if i == 0:  # center
@@ -697,7 +703,7 @@ class Mosaic(BaseMixTransform):
             h, w = labels_patch.pop("resized_shape")
 
             if img.shape[2] != 5:
-                print(f'Reshaping image: {img} in mosaic: org shape was {img.shape[2]}')
+                print(f'Reshaping image in mosaic: org shape was: {img.shape[2]}')
                 img = img[:, :, :5] 
 
 
@@ -762,7 +768,7 @@ class Mosaic(BaseMixTransform):
             h, w = labels_patch.pop("resized_shape")
             
             if img.shape[2] != 5:
-                print(f'Reshaping image: {img} in mosaic: org shape was {img.shape[2]}')
+                print(f'Reshaping image in mosaic: org shape was: {img.shape[2]}')
                 img = img[:, :, :5] 
             # Place img in img9
             if i == 0:  # center
