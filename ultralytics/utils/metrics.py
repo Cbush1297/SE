@@ -656,6 +656,13 @@ class Metric(SimpleClass):
         self.ap_class_index = []  # (nc, )
         self.nc = 0
 
+        # Initialize curve-related attributes
+        self.p_curve = []
+        self.r_curve = []
+        self.f1_curve = []
+        self.px = []
+        self.prec_values = []
+
     @property
     def ap50(self):
         """
@@ -785,7 +792,12 @@ class Metric(SimpleClass):
     @property
     def curves_results(self):
         """Returns a list of curves for accessing specific metrics curves."""
-        print("Curves results called within metric:", self.curve_results)
+        print("Curves results called within Metric:")
+        print(f"px: {self.px}")
+        print(f"prec_values: {self.prec_values}")
+        print(f"f1_curve: {self.f1_curve}")
+        print(f"p_curve: {self.p_curve}")
+        print(f"r_curve: {self.r_curve}")
         return [
             [self.px, self.prec_values, "Recall", "Precision"],
             [self.px, self.f1_curve, "Confidence", "F1"],
