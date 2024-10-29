@@ -193,6 +193,9 @@ class YOLODataset(BaseDataset):
             transforms = v8_transforms(self, self.imgsz, hyp)
         else:
             transforms = Compose([LetterBox(new_shape=(self.imgsz, self.imgsz), scaleup=False)])
+
+        transforms.append(lambda img: process_channels(img))
+        
         transforms.append(
             Format(
                 bbox_format="xywh",
@@ -207,6 +210,12 @@ class YOLODataset(BaseDataset):
             )
         )
         return transforms
+
+    def process_channels(img):
+        # Split first three channels (BGR), flip to RGB, and concatenate with remaining channels
+        rgb = img[..., :3][..., ::-1]  # Convert first 3 channels BGR -> RGB
+        other_channels = img[..., 3:]  # Remaining channels (4 and 5)
+        return np.concatenate((rgb, other_channels), axis=-1)
 
     def close_mosaic(self, hyp):
         """Sets mosaic, copy_paste and mixup options to 0.0 and builds transformations."""
