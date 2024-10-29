@@ -200,7 +200,7 @@ class YOLODataset(BaseDataset):
         else:
             transforms = Compose([LetterBox(new_shape=(self.imgsz, self.imgsz), scaleup=False)])
 
-        transforms.append(lambda img: process_channels(img))
+        transforms.append(lambda img: self.process_channels(img))
         
         transforms.append(
             Format(
