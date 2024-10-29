@@ -185,6 +185,12 @@ class YOLODataset(BaseDataset):
             LOGGER.warning(f"WARNING ⚠️ No labels found in {cache_path}, training may not work correctly. {HELP_URL}")
         return labels
 
+    def process_channels(img):
+        # Split first three channels (BGR), flip to RGB, and concatenate with remaining channels
+        rgb = img[..., :3][..., ::-1]  # Convert first 3 channels BGR -> RGB
+        other_channels = img[..., 3:]  # Remaining channels (4 and 5)
+        return np.concatenate((rgb, other_channels), axis=-1)
+
     def build_transforms(self, hyp=None):
         """Builds and appends transforms to the list."""
         if self.augment:
@@ -210,12 +216,6 @@ class YOLODataset(BaseDataset):
             )
         )
         return transforms
-
-    def process_channels(img):
-        # Split first three channels (BGR), flip to RGB, and concatenate with remaining channels
-        rgb = img[..., :3][..., ::-1]  # Convert first 3 channels BGR -> RGB
-        other_channels = img[..., 3:]  # Remaining channels (4 and 5)
-        return np.concatenate((rgb, other_channels), axis=-1)
 
     def close_mosaic(self, hyp):
         """Sets mosaic, copy_paste and mixup options to 0.0 and builds transformations."""
