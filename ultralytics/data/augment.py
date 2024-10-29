@@ -1393,7 +1393,7 @@ class RandomHSV:
             # Reassemble augmented BGR with additional channels
             img = np.concatenate((bgr_augmented, extra_channels), axis=2)
             labels["img"] = img # no return needed
-            print(f'Image leaving HSV with shape: {img.shape[2]')
+            print(f'Image leaving HSV with shape: {img.shape[2]}')
         return labels
 
 
