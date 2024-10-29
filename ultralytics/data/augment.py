@@ -633,6 +633,8 @@ class Mosaic(BaseMixTransform):
             if img.shape[2] != 5:
                 print(f'Reshaping image: {img} in mosaic: org shape was {img.shape[2]}')
                 img = img[:, :, :5] 
+            if img.shape[2] == 5:
+                print(img)
             # Place img in img3
             if i == 0:  # center
                 img3 = np.full((s * 3, s * 3, 5), 114, dtype=np.uint8)  # base image with 3 tiles
@@ -693,6 +695,9 @@ class Mosaic(BaseMixTransform):
             if img.shape[2] != 5:
                 print(f'Reshaping image: {img} in mosaic: org shape was {img.shape[2]}')
                 img = img[:, :, :5] 
+
+            if img.shape[2] == 5:
+                print(img)
 
             # Place img in img4
             if i == 0:  # top left
@@ -757,6 +762,9 @@ class Mosaic(BaseMixTransform):
             if img.shape[2] != 5:
                 print(f'Reshaping image: {img} in mosaic: org shape was {img.shape[2]}')
                 img = img[:, :, :5] 
+
+            if img.shape[2] == 5:
+                print(img)
             # Place img in img9
             if i == 0:  # center
                 img9 = np.full((s * 3, s * 3, 5), 114, dtype=np.uint8)  # base image with 4 tiles
