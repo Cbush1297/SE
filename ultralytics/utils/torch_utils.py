@@ -420,78 +420,17 @@ def get_flops_with_torch_profiler(model, imgsz=640):
     return flops
 
 
-# def initialize_weights(model):
-#     """Initialize model weights to random values."""
-#     for m in model.modules():
-#         t = type(m)
-#         if t is nn.Conv2d:
-#             pass  # nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
-#         elif t is nn.BatchNorm2d:
-#             m.eps = 1e-3
-#             m.momentum = 0.03
-#         elif t in {nn.Hardswish, nn.LeakyReLU, nn.ReLU, nn.ReLU6, nn.SiLU}:
-#             m.inplace = True
-
-import torch
-import torch.nn as nn
-
-def initialize_weights(model, pretrained_rgb_path=None):
-    """
-    Initialize model weights with pretrained RGB weights for the first three channels
-    and randomly initialize the additional two channels for optical flow.
-
-    Args:
-        model (nn.Module): The YOLO model instance.
-        pretrained_rgb_path (str, optional): Path to the pretrained RGB weights (.pth file).
-    """
-    # Load the pretrained RGB weights if a path is provided
-    if pretrained_rgb_path:
-        pretrained_rgb_weights = torch.load(pretrained_rgb_path, map_location='cpu')
-        print(f"Loaded pretrained RGB weights from {pretrained_rgb_path}")
-    else:
-        pretrained_rgb_weights = None
-        print("No pretrained RGB weights provided. Initializing all weights randomly.")
-
-    for name, m in model.named_modules():
+def initialize_weights(model):
+    """Initialize model weights to random values."""
+    for m in model.modules():
         t = type(m)
-
         if t is nn.Conv2d:
-            if m.in_channels == 5 and pretrained_rgb_weights:
-                # Determine the key for the first Conv2d layer in the pretrained weights
-                # This key depends on how the model was saved; adjust accordingly
-                # Example assumes 'model.0.conv.weight' for the first Conv2d layer
-                pretrained_weight_key = 'model.0.conv.weight'  # Modify based on your state_dict
-
-                if pretrained_weight_key in pretrained_rgb_weights:
-                    # Extract the pretrained RGB weights (first three channels)
-                    rgb_weights = pretrained_rgb_weights[pretrained_weight_key][:, :3, :, :]
-                    
-                    # Initialize the optical flow channels with Kaiming Normal
-                    optical_flow_weights = torch.empty((m.weight.size(0), 2, m.weight.size(2), m.weight.size(3)))
-                    nn.init.kaiming_normal_(optical_flow_weights, mode='fan_out', nonlinearity='relu')
-
-                    # Concatenate the RGB and optical flow weights
-                    new_weights = torch.cat((rgb_weights, optical_flow_weights), dim=1)
-
-                    # Assign the new weights to the Conv2d layer
-                    m.weight = nn.Parameter(new_weights)
-                    
-                    print(f"Initialized {name} with pretrained RGB weights and random optical flow weights.")
-                else:
-                    print(f"Pretrained weight key '{pretrained_weight_key}' not found in the pretrained weights.")
-                    # Initialize all channels randomly if key not found
-                    nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
-            else:
-                # Initialize other Conv2d layers with Kaiming Normal
-                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
-
+            pass  # nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
         elif t is nn.BatchNorm2d:
             m.eps = 1e-3
             m.momentum = 0.03
-
         elif t in {nn.Hardswish, nn.LeakyReLU, nn.ReLU, nn.ReLU6, nn.SiLU}:
             m.inplace = True
-
 
 
 def scale_img(img, ratio=1.0, same_shape=False, gs=32):
