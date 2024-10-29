@@ -763,7 +763,7 @@ class Metric(SimpleClass):
             Updates the class attributes `self.p`, `self.r`, `self.f1`, `self.all_ap`, and `self.ap_class_index` based
             on the values provided in the `results` tuple.
         """
-        print("Update called within Metric")
+        print("Update called within Metricwith results:", results)
         (
             self.p,
             self.r,
@@ -785,7 +785,7 @@ class Metric(SimpleClass):
     @property
     def curves_results(self):
         """Returns a list of curves for accessing specific metrics curves."""
-        print("Curves results called within metric")
+        print("Curves results called within metric:", self.curve_results)
         return [
             [self.px, self.prec_values, "Recall", "Precision"],
             [self.px, self.f1_curve, "Confidence", "F1"],
@@ -838,6 +838,11 @@ class DetMetrics(SimpleClass):
 
     def process(self, tp, conf, pred_cls, target_cls):
         """Process predicted results for object detection and update metrics."""
+        print("DetMetrics.process called")
+        print("tp:", tp)
+        print("conf:", conf)
+        print("pred_cls:", pred_cls)
+        print("target_cls:", target_cls)
         results = ap_per_class(
             tp,
             conf,
@@ -848,6 +853,7 @@ class DetMetrics(SimpleClass):
             names=self.names,
             on_plot=self.on_plot,
         )[2:]
+        print("ap_per_class results:", results) 
         self.box.nc = len(self.names)
         self.box.update(results)
 
