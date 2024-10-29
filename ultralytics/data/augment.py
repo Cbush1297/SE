@@ -1608,9 +1608,21 @@ class LetterBox:
             img = cv2.resize(img, new_unpad, interpolation=cv2.INTER_LINEAR)
         top, bottom = int(round(dh - 0.1)) if self.center else 0, int(round(dh + 0.1))
         left, right = int(round(dw - 0.1)) if self.center else 0, int(round(dw + 0.1))
-        img = cv2.copyMakeBorder(
-            img, top, bottom, left, right, cv2.BORDER_CONSTANT, value=(114, 114, 114)
-        )  # add border
+        
+        if img.shape[2] == 5:
+            # Use np.pad for custom padding on 5-channel images
+            img = np.pad(
+                img,
+                ((top, bottom), (left, right), (0, 0)),  # Pad height, width, and keep channels as they are
+                mode='constant',
+                constant_values=114  # Padding value for all channels
+            )
+        else:
+            # Use OpenCV's copyMakeBorder for other images
+            img = cv2.copyMakeBorder(
+                img, top, bottom, left, right, cv2.BORDER_CONSTANT, value=(114, 114, 114)
+            )
+        
         if labels.get("ratio_pad"):
             labels["ratio_pad"] = (labels["ratio_pad"], (left, top))  # for evaluation
 
