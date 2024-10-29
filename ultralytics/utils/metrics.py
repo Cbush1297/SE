@@ -656,12 +656,6 @@ class Metric(SimpleClass):
         self.ap_class_index = []  # (nc, )
         self.nc = 0
 
-        self.px = []
-        self.prec_values = []
-        self.f1_curve = []
-        self.p_curve = []
-        self.r_curve = []
-
     @property
     def ap50(self):
         """
@@ -792,8 +786,6 @@ class Metric(SimpleClass):
     def curves_results(self):
         """Returns a list of curves for accessing specific metrics curves."""
         print("Curves results called within metric")
-        if not all(hasattr(self, attr) for attr in ["px", "prec_values", "f1_curve", "p_curve", "r_curve"]):
-            return []
         return [
             [self.px, self.prec_values, "Recall", "Precision"],
             [self.px, self.f1_curve, "Confidence", "F1"],
