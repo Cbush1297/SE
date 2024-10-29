@@ -962,6 +962,7 @@ def parse_model(d, ch, verbose=True):  # model_dict, input_channels(3)
     layers, save, c2 = [], [], ch[-1]  # layers, savelist, ch out
     for i, (f, n, m, args) in enumerate(d["backbone"] + d["head"]):  # from, number, module, args
         m = getattr(torch.nn, m[3:]) if "nn." in m else globals()[m]  # get module
+        print(f"\nLayer {i} - Module: {m.__name__}, From layer(s): {f}, Repeats: {n}")
         for j, a in enumerate(args):
             if isinstance(a, str):
                 try:
@@ -1007,6 +1008,7 @@ def parse_model(d, ch, verbose=True):  # model_dict, input_channels(3)
             c1, c2 = ch[f], args[0]
             if c2 != nc:  # if c2 not equal to number of classes (i.e. for Classify() output)
                 c2 = make_divisible(min(c2, max_channels) * width, 8)
+            print(f"Processing layer {i} - Conv-based layer, Input channels: {c1}, Output channels (after scaling): {c2}")
             if m is C2fAttn:
                 args[1] = make_divisible(min(args[1], max_channels // 2) * width, 8)  # embed channels
                 args[2] = int(
@@ -1078,6 +1080,7 @@ def parse_model(d, ch, verbose=True):  # model_dict, input_channels(3)
         if i == 0:
             ch = []
         ch.append(c2)
+        print(f"Layer {i} setup complete - c1: {c1}, c2: {c2}, Channels after processing: {ch}")
     return nn.Sequential(*layers), sorted(save)
 
 
