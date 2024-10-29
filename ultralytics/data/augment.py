@@ -198,7 +198,18 @@ class Compose:
             >>> transformed_data = compose(input_data)
         """
         for t in self.transforms:
-            data = t(data)
+            # Check if the current transformation is ToGray
+            if isinstance(t, A.ToGray):
+                img = data.get("image")
+                if img is not None and img.shape[0] == 3:
+                    # Apply ToGray only if image has 3 channels
+                    data = t(data)
+                else:
+                    # Skip ToGray transformation for images with != 3 channels
+                    continue
+            else:
+                # Apply all other transformations normally
+                data = t(data)
         return data
 
     def append(self, transform):
