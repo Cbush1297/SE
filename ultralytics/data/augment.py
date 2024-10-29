@@ -1938,6 +1938,9 @@ class Albumentations:
         else:
             labels["img"] = self.transform(image=labels["img"])["image"]  # transformed
 
+        if labels["img"].shape[2] != 5:
+            print(f"Channel mismatch after Albumentations: {labels['img'].shape}")
+
         return labels
 
 
