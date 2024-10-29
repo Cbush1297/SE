@@ -1016,7 +1016,7 @@ def parse_model(d, ch, verbose=True):  # model_dict, input_channels(3)
                     max(round(min(args[2], max_channels // 2 // 32)) * width, 1) if args[2] > 1 else args[2]
                 )  # num heads
 
-            args = [c1, c2, *args[2:]]
+            args = [c1, c2, *args[1:]]
             if m in {
                 BottleneckCSP,
                 C1,
