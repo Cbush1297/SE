@@ -1005,7 +1005,8 @@ def parse_model(d, ch, verbose=True):  # model_dict, input_channels(3)
             SCDown,
             C2fCIB,
         }:
-            c1, c2 = ch[f], args[0]
+            c1, c2 = ch[f], args[1]
+            print(f"Parse model c1: {c1} - c2: {c2} - after changing args[1]")
             if c2 != nc:  # if c2 not equal to number of classes (i.e. for Classify() output)
                 c2 = make_divisible(min(c2, max_channels) * width, 8)
             print(f"Processing layer {i} - Conv-based layer, Input channels: {c1}, Output channels (after scaling): {c2}")
