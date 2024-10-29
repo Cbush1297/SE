@@ -394,6 +394,12 @@ class BaseMixTransform:
         # Get images information will be used for Mosaic or MixUp
         mix_labels = [self.dataset.get_image_and_label(i) for i in indexes]
 
+        for i, data in enumerate(mix_labels):
+            if data["img"].shape[2] != 5:
+                # mix_labels[i]["img"] = np.concatenate([data["img"], np.zeros((data["img"].shape[0], data["img"].shape[1], 5 - data["img"].shape[2]))], axis=2)
+                print(f"Issue with image: {data.get('im_file', "Unknown")}")
+                print(data["img"].shape)
+                print(data["img"])
         if self.pre_transform is not None:
             for i, data in enumerate(mix_labels):
                 mix_labels[i] = self.pre_transform(data)
