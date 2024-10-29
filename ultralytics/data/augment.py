@@ -547,12 +547,6 @@ class Mosaic(BaseMixTransform):
         self.border = (-imgsz // 2, -imgsz // 2)  # width, height
         self.n = n
 
-        for i, data in enumerate(dataset):
-            img = data["img"]
-            if img.shape[2] != 5:
-                print(f"Issue found in image at index {i}, file: {data.get('im_file', 'Unknown')}")
-                print(f"Shape: {img.shape}")
-
     def get_indexes(self, buffer=True):
         """
         Returns a list of random indexes from the dataset for mosaic augmentation.
