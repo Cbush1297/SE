@@ -185,11 +185,11 @@ class YOLODataset(BaseDataset):
             LOGGER.warning(f"WARNING ⚠️ No labels found in {cache_path}, training may not work correctly. {HELP_URL}")
         return labels
 
-    def process_channels(img):
-        # Split first three channels (BGR), flip to RGB, and concatenate with remaining channels
-        rgb = img[..., :3][..., ::-1]  # Convert first 3 channels BGR -> RGB
-        other_channels = img[..., 3:]  # Remaining channels (4 and 5)
-        return np.concatenate((rgb, other_channels), axis=-1)
+    # def process_channels(img):
+    #     # Split first three channels (BGR), flip to RGB, and concatenate with remaining channels
+    #     rgb = img[..., :3][..., ::-1]  # Convert first 3 channels BGR -> RGB
+    #     other_channels = img[..., 3:]  # Remaining channels (4 and 5)
+    #     return np.concatenate((rgb, other_channels), axis=-1)
 
     def build_transforms(self, hyp=None):
         """Builds and appends transforms to the list."""
@@ -200,7 +200,7 @@ class YOLODataset(BaseDataset):
         else:
             transforms = Compose([LetterBox(new_shape=(self.imgsz, self.imgsz), scaleup=False)])
 
-        transforms.append(lambda img: self.process_channels(img))
+        # transforms.append(lambda img: self.process_channels(img))
         
         transforms.append(
             Format(
